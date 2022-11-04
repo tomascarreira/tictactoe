@@ -1,0 +1,14 @@
+#board {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	height: 600px;
+	width: 600px;
+}
+
+.square {
+	border: 1px solid black;
+	font-size: 100px;
+	text-align: center;
+	line-height: 200px;
+}
