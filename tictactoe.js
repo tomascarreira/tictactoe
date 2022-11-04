@@ -10,7 +10,7 @@ const playerOne = Player("Player One", "X");
 const playerTwo = Player("Player Two", "O");
 
 const gameLogic = (() => {
-	let activePlayer = playerOne;
+	let activePlayer;
 
 	const _togglePlayer = () => {
 		if (activePlayer == playerOne) {
@@ -20,7 +20,8 @@ const gameLogic = (() => {
 		}
 	};
 
-	const _startGame = () => {
+	const startGame = () => {
+		gameDisplay.drawBoard();
 		activePlayer = playerOne;
 	};
 
@@ -33,11 +34,11 @@ const gameLogic = (() => {
 			if (isWin) {
 				alert(`${activePlayer.name} wins!`);
 				gameBoard.clearBoard();
-				_startGame();
+				startGame();
 			} else if (isDraw) {
 				alert("Game is draw.");
 				gameBoard.clearBoard();
-				_startGame();
+				startGame();
 			} else {
 				_togglePlayer();
 			}
@@ -45,19 +46,49 @@ const gameLogic = (() => {
 	};
 
 	return {
-		playerTurn
+		playerTurn,
+		startGame
 	};
 })();
 
 
 const gameDisplay = (() => {
-	const squares = document.querySelectorAll(".square");
-	squares.forEach((square) => {
-		square.addEventListener("click", () => {
-			const index = square.dataset.index;
-			gameLogic.playerTurn(index);
-		});
+	const onePlayer = document.querySelector("#one-player");
+	const twoPlayers = document.querySelector("#two-players");
+	twoPlayers.addEventListener("click", () => {
+		const playerNumber =  document.querySelector("#player-number");
+		const main = document.querySelector("main");
+		main.removeChild(playerNumber);
+		gameLogic.startGame();
 	});
+
+	const _createBoard = () => {
+		const board = document.createElement("div");
+		board.id = "board";
+		for (let i = 0; i < 9; ++i) {
+			const square = document.createElement("div");
+			square.className = "square";
+			square.dataset.index = i;
+
+			square.addEventListener("click", () => {
+				gameLogic.playerTurn(i);
+			});
+
+			board.appendChild(square);
+		}
+
+
+
+		return board;
+	}
+
+	const board = _createBoard();
+	const squares = board.querySelectorAll(".square");
+
+	const drawBoard = () => {
+		const main = document.querySelector("main");
+		main.appendChild(board);
+	}
 
 	const displayMarker = (index, marker) => {
 		squares.forEach((square) => {
@@ -75,6 +106,7 @@ const gameDisplay = (() => {
 	};
 
 	return {
+		drawBoard,
 		displayMarker,
 		clearMarkers
 	};
