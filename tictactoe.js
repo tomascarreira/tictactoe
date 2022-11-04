@@ -25,21 +25,22 @@ const gameLogic = (() => {
 	};
 
 	const playerTurn = (index) => {
-		gameBoard.insertMarker(index, activePlayer.marker);
-		gameDisplay.displayMarker(index, activePlayer.marker);
-		const isWin = gameBoard.checkWin(activePlayer);
-		const isDraw = gameBoard.checkDraw();
-
-		if (isWin) {
-			alert(`${activePlayer.name} wins!`);
-			gameBoard.clearBoard();
-			_startGame();
-		} else if (isDraw) {
-			alert("Game is draw.");
-			gameBoard.clearBoard();
-			_startGame();
-		} else {
-			_togglePlayer();
+		if (gameBoard.insertMarker(index, activePlayer.marker)) {
+			gameDisplay.displayMarker(index, activePlayer.marker);
+			const isWin = gameBoard.checkWin(activePlayer);
+			const isDraw = gameBoard.checkDraw();
+	
+			if (isWin) {
+				alert(`${activePlayer.name} wins!`);
+				gameBoard.clearBoard();
+				_startGame();
+			} else if (isDraw) {
+				alert("Game is draw.");
+				gameBoard.clearBoard();
+				_startGame();
+			} else {
+				_togglePlayer();
+			}
 		}
 	};
 
@@ -85,7 +86,12 @@ const gameBoard = (() => {
 				null, null, null];
 
 	const insertMarker = (index, marker) => {
-		board.splice(index, 1, marker);	
+		if (board[index] == null) {
+			board.splice(index, 1, marker);
+			return true;
+		} else {
+			return false;
+		}
 	};
 
 	const clearBoard = () => {
