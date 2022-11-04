@@ -32,13 +32,13 @@ const gameLogic = (() => {
 			const isDraw = gameBoard.checkDraw();
 	
 			if (isWin) {
-				alert(`${activePlayer.name} wins!`);
-				gameBoard.clearBoard();
-				startGame();
+				gameDisplay.drawEndButtons();
+				//gameBoard.clearBoard();
+				//startGame();
 			} else if (isDraw) {
-				alert("Game is draw.");
-				gameBoard.clearBoard();
-				startGame();
+				gameDisplay.drawEndButtons();
+				//gameBoard.clearBoard();
+				//startGame();
 			} else {
 				_togglePlayer();
 			}
@@ -53,12 +53,14 @@ const gameLogic = (() => {
 
 
 const gameDisplay = (() => {
+	const main = document.querySelector("main");
+	let playerNumber = document.querySelector("#player-number");
+
 	const onePlayer = document.querySelector("#one-player");
 	const twoPlayers = document.querySelector("#two-players");
 	twoPlayers.addEventListener("click", () => {
-		const playerNumber =  document.querySelector("#player-number");
-		const main = document.querySelector("main");
-		main.removeChild(playerNumber);
+		playerNumber = main.removeChild(playerNumber);
+		gameBoard.clearBoard();
 		gameLogic.startGame();
 	});
 
@@ -80,15 +82,47 @@ const gameDisplay = (() => {
 
 
 		return board;
-	}
+	};
 
 	const board = _createBoard();
 	const squares = board.querySelectorAll(".square");
 
 	const drawBoard = () => {
-		const main = document.querySelector("main");
 		main.appendChild(board);
-	}
+	};
+
+	const _createEndButtons = () => {
+		const endButtons = document.createElement("div");
+		endButtons.id = "end-buttons";
+
+		const playAgain = document.createElement("button");
+		playAgain.textContent = "Play Again";
+		playAgain.addEventListener("click", () => {
+			const endButtons = document.querySelector("#end-buttons");
+			main.removeChild(endButtons);
+			gameBoard.clearBoard();
+			gameLogic.startGame();
+		});
+		endButtons.appendChild(playAgain);
+
+		const mainMenu = document.createElement("button");
+		mainMenu.textContent = "Main Menu";
+		mainMenu.addEventListener("click", () => {
+			const endButtons = document.querySelector("#end-buttons");
+			main.removeChild(board);
+			main.removeChild(endButtons);
+			main.append(playerNumber);
+		});
+		endButtons.appendChild(mainMenu);
+
+		return endButtons;
+	};
+
+	const endButtons = _createEndButtons();
+
+	const drawEndButtons = () => {
+		main.appendChild(endButtons)
+	};
 
 	const displayMarker = (index, marker) => {
 		squares.forEach((square) => {
@@ -107,8 +141,9 @@ const gameDisplay = (() => {
 
 	return {
 		drawBoard,
+		drawEndButtons,
 		displayMarker,
-		clearMarkers
+		clearMarkers,
 	};
 })();
 
