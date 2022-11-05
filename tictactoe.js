@@ -11,6 +11,7 @@ const playerTwo = Player("Player Two", "O");
 
 const gameLogic = (() => {
 	let activePlayer;
+	let isGameOver = false;
 
 	const _togglePlayer = () => {
 		if (activePlayer == playerOne) {
@@ -21,24 +22,29 @@ const gameLogic = (() => {
 	};
 
 	const startGame = () => {
+		isGameOver = false;
 		gameDisplay.drawBoard();
 		activePlayer = playerOne;
 	};
 
 	const playerTurn = (index) => {
+		if (isGameOver) {
+			return
+		}
+
 		if (gameBoard.insertMarker(index, activePlayer.marker)) {
 			gameDisplay.displayMarker(index, activePlayer.marker);
 			const isWin = gameBoard.checkWin(activePlayer);
 			const isDraw = gameBoard.checkDraw();
 	
 			if (isWin) {
+				isGameOver = true;
+				gameDisplay.drawEndMessage(`${activePlayer.name} wins!`);
 				gameDisplay.drawEndButtons();
-				//gameBoard.clearBoard();
-				//startGame();
 			} else if (isDraw) {
+				isGameOver = true;
+				gameDisplay.drawEndMessage("Games is a draw");
 				gameDisplay.drawEndButtons();
-				//gameBoard.clearBoard();
-				//startGame();
 			} else {
 				_togglePlayer();
 			}
@@ -79,8 +85,6 @@ const gameDisplay = (() => {
 			board.appendChild(square);
 		}
 
-
-
 		return board;
 	};
 
@@ -99,6 +103,7 @@ const gameDisplay = (() => {
 		playAgain.textContent = "Play Again";
 		playAgain.addEventListener("click", () => {
 			const endButtons = document.querySelector("#end-buttons");
+			main.removeChild(endMessage);
 			main.removeChild(endButtons);
 			gameBoard.clearBoard();
 			gameLogic.startGame();
@@ -110,12 +115,21 @@ const gameDisplay = (() => {
 		mainMenu.addEventListener("click", () => {
 			const endButtons = document.querySelector("#end-buttons");
 			main.removeChild(board);
+			main.removeChild(endMessage);
 			main.removeChild(endButtons);
 			main.append(playerNumber);
 		});
 		endButtons.appendChild(mainMenu);
 
 		return endButtons;
+	};
+
+	let endMessage;
+		
+	const drawEndMessage = (message) => {
+		endMessage = document.createElement("p");
+		endMessage.textContent = message;
+		main.appendChild(endMessage);
 	};
 
 	const endButtons = _createEndButtons();
@@ -141,6 +155,7 @@ const gameDisplay = (() => {
 
 	return {
 		drawBoard,
+		drawEndMessage,
 		drawEndButtons,
 		displayMarker,
 		clearMarkers,
